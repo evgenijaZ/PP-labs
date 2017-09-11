@@ -53,6 +53,7 @@ procedure lab1 is
       G,K,L,F : Matrix;
       a : Integer;
    begin
+      delay 3.0;
       Put_Line ("Task 2:");
       Put_Line("Enter N2:");
       Ada.Integer_Text_IO.Get(N);
@@ -85,6 +86,7 @@ procedure lab1 is
       P,R : Matrix;
       S,T,O : Vector;
    begin
+      delay 6.0;
       Put_Line ("Task 3:");
       Put_Line("Enter N3:");
       Ada.Integer_Text_IO.Get(N);
