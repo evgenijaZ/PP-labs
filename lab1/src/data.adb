@@ -8,18 +8,28 @@ package body Data is
    function F1(A : in Matrix; D : in Matrix; B : in Vector) return Matrix is
       E : Matrix;
    begin
+      E := Multiple(A,D);
+      E := Multiple(Max(B), E);
       return E;
    end F1;
 
    function F2(a : in Integer; G : in Matrix; K : in Matrix; L : in Matrix) return Matrix is
-      F : Matrix;
+      F,T : Matrix;
    begin
+      T:=Trans(G);
+      F:=Multiple(a,T);
+      T:=Multiple(K,L);
+      F:=Amount(F,T);
       return F;
    end F2;
 
    function F3(P : in Matrix; R : in Matrix; S : in Vector; T : in Vector) return Vector is
       O : Vector;
+      A : Matrix;
    begin
+      A:=Multiple(P,R);
+      O:=Multiple(A,S);
+      O:=Amount(O,S);
       return O;
    end F3;
 
@@ -37,7 +47,6 @@ package body Data is
 
    procedure Matrix_Output(A : in Matrix) is
    begin
-      Put_Line ("Matrix:");
       for i in 1..N loop
          for j in 1..N loop
             Ada.Integer_Text_IO.Put(A(i,j));
@@ -47,8 +56,8 @@ package body Data is
    end Matrix_Output;
 
 
-    procedure Matrix_Generate (A : out Matrix) is
-      type Rand_Range is range 1..100;
+   procedure Matrix_Generate (A : out Matrix) is
+      type Rand_Range is range 1..10;
       package Rand_Int is new Ada.Numerics.Discrete_Random(Rand_Range);
       seed : Rand_Int.Generator;
       Num : Rand_Range;
@@ -63,17 +72,28 @@ package body Data is
    end Matrix_Generate;
 
    procedure Vector_Generate (A : out Vector) is
-      type Rand_Range is range 1..100;
+      type Rand_Range is range 1..10;
       package Rand_Int is new Ada.Numerics.Discrete_Random(Rand_Range);
       seed : Rand_Int.Generator;
       Num : Rand_Range;
    begin
       Rand_Int.Reset(seed);
       for i in 1..N loop
-            Num := Rand_Int.Random(seed);
-            A(i) := Integer(Num);
+         Num := Rand_Int.Random(seed);
+         A(i) := Integer(Num);
       end loop;
    end Vector_Generate;
+
+   procedure Value_Generate (A : out Integer) is
+      type Rand_Range is range 1..10;
+      package Rand_Int is new Ada.Numerics.Discrete_Random(Rand_Range);
+      seed : Rand_Int.Generator;
+      Num : Rand_Range;
+   begin
+      Rand_Int.Reset(seed);
+      Num := Rand_Int.Random(seed);
+      A := Integer(Num);
+   end Value_Generate;
 
    procedure Vector_Input (A : out Vector) is
       item : Integer;
@@ -87,7 +107,6 @@ package body Data is
 
    procedure Vector_Output(A : in Vector) is
    begin
-      Put_Line ("Vector:");
       for i in 1..N loop
          Ada.Integer_Text_IO.Put(A(i));
       end loop;
@@ -142,7 +161,7 @@ package body Data is
    begin
       for i in 1..N loop
          for j in 1..N loop
-           C(i,j):=A(i,j)+B(i,j);
+            C(i,j):=A(i,j)+B(i,j);
          end loop;
       end loop;
       return C;
@@ -155,9 +174,22 @@ package body Data is
       for row in 1..N loop
          for col in 1..N loop
             C(row,col):=0;
-          for inner in 1..N loop
-            C(row,col) := C(row,col) + A(row,inner) * B(inner,col);
-          end loop;
+            for inner in 1..N loop
+               C(row,col) := C(row,col) + A(row,inner) * B(inner,col);
+            end loop;
+         end loop;
+      end loop;
+      return C;
+   end Multiple;
+
+
+   function Multiple ( A: in Matrix; B: in Vector) return Vector is
+      C:Vector;
+   begin
+      for row in 1..N loop
+         C(row):=0;
+         for col in 1..N loop
+               C(row) := C(row) + A(row,col) * B(col);
          end loop;
       end loop;
       return C;
