@@ -4,6 +4,7 @@ with Data;
 use Data;
 with Ada.Integer_Text_IO;
 with Ada.Integer_Text_IO;
+
 procedure lab1 is
 
    task T1;
@@ -25,6 +26,20 @@ procedure lab1 is
    end T3;
 
 
+  A:Matrix;
+
 begin
+   Put_Line("Enter N:");
+   Ada.Integer_Text_IO.Get(N);
+   while N>NMax loop
+      Put("N must be less than");
+      Ada.Integer_Text_IO.Put(NMax);
+      New_Line;
+      Put_Line("Enter N:");
+   Ada.Integer_Text_IO.Get(N);
+   end loop;
+   Matrix_Generate(A);
+   Matrix_Output(A);
+
 
 end lab1;

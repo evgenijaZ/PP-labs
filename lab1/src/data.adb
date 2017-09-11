@@ -1,7 +1,8 @@
 with Ada.Integer_Text_IO;
 with Ada.Integer_Text_IO;
 with Ada.Text_IO; use Ada.Text_IO;
-
+with Ada.Numerics;
+with Ada.Numerics.Discrete_Random;
 package body Data is
 
    function F1(A : in Matrix; D : in Matrix; B : in Vector) return Matrix is
@@ -45,6 +46,34 @@ package body Data is
       end loop;
    end Matrix_Output;
 
+
+    procedure Matrix_Generate (A : out Matrix) is
+      type Rand_Range is range 1..100;
+      package Rand_Int is new Ada.Numerics.Discrete_Random(Rand_Range);
+      seed : Rand_Int.Generator;
+      Num : Rand_Range;
+   begin
+      Rand_Int.Reset(seed);
+      for i in 1..N loop
+         for j in 1..N loop
+            Num := Rand_Int.Random(seed);
+            A(i,j) := Integer(Num);
+         end loop;
+      end loop;
+   end Matrix_Generate;
+
+   procedure Vector_Generate (A : out Vector) is
+      type Rand_Range is range 1..100;
+      package Rand_Int is new Ada.Numerics.Discrete_Random(Rand_Range);
+      seed : Rand_Int.Generator;
+      Num : Rand_Range;
+   begin
+      Rand_Int.Reset(seed);
+      for i in 1..N loop
+            Num := Rand_Int.Random(seed);
+            A(i) := Integer(Num);
+      end loop;
+   end Vector_Generate;
 
    procedure Vector_Input (A : out Vector) is
       item : Integer;
@@ -133,6 +162,5 @@ package body Data is
       end loop;
       return C;
    end Multiple;
-
 
 end Data;
