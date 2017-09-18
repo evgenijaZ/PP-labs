@@ -7,128 +7,124 @@ with Ada.Integer_Text_IO;
 
 procedure lab1 is
 
-   task T1 is
+   task T1 with CPU=>0 is
       pragma Priority(3);
+      pragma Storage_Size(900_000_000);
    end T1;
-   task T2 is
+
+   task T2 with CPU=>1 is
       pragma Priority(2);
+      pragma Storage_Size(900_000_000);
    end T2;
-   task T3 is
+
+   task T3 with CPU=>2 is
       pragma Priority(1);
+      pragma Storage_Size(900_000_000);
    end T3;
 
 
    task body T1 is
       A,D,E : Matrix;
       B : Vector;
+      N : Integer;
    begin
 
       Put_Line ("Task 1:");
 
       Put_Line("Enter N1:");
       Ada.Integer_Text_IO.Get(N);
-      while N>NMax loop
+      while N>1000 loop
          Put("N must be less than");
-         Ada.Integer_Text_IO.Put(NMax);
+         Ada.Integer_Text_IO.Put(1000);
          New_Line;
          Put_Line("Enter N:");
          Ada.Integer_Text_IO.Get(N);
       end loop;
 
-      Matrix_Generate(A);
+      Matrix_Generate(A,N);
       Put_Line ("Matrix A:");
-      Matrix_Output(A);
-      Matrix_Generate(D);
+      Matrix_Output(A,N);
+      Matrix_Generate(D,N);
       Put_Line ("Matrix D:");
-      Matrix_Output(D);
-      Vector_Generate(B);
+      Matrix_Output(D,N);
+      Vector_Generate(B,N);
       Put_Line ("Vector B:");
-      Vector_Output(B);
-      E := F1(A,D,B);
+      Vector_Output(B,N);
+      E := F1(A,D,B,N);
       Put_Line ("Matrix E:");
-      Matrix_Output(E);
+      Matrix_Output(E,N);
+      Put_Line("End task 1");
    end T1;
 
    task body T2 is
       G,K,L,F : Matrix;
-      a : Integer;
+      a,N : Integer;
    begin
       delay 3.0;
       Put_Line ("Task 2:");
       Put_Line("Enter N2:");
       Ada.Integer_Text_IO.Get(N);
-      while N>NMax loop
+      while N>1000 loop
          Put("N must be less than");
-         Ada.Integer_Text_IO.Put(NMax);
+         Ada.Integer_Text_IO.Put(1000);
          New_Line;
          Put_Line("Enter N:");
          Ada.Integer_Text_IO.Get(N);
       end loop;
-      Matrix_Generate(G);
+      Matrix_Generate(G,N);
       Put_Line ("Matrix G:");
-      Matrix_Output(G);
-      Matrix_Generate(K);
+      Matrix_Output(G,N);
+      Matrix_Generate(K,N);
       Put_Line ("Matrix K:");
-      Matrix_Output(K);
-      Matrix_Generate(L);
+      Matrix_Output(K,N);
+      Matrix_Generate(L,N);
       Put_Line ("Matrix L:");
-      Matrix_Output(L);
+      Matrix_Output(L,N);
       Value_Generate(a);
       Put_Line("Variable a:");
       Ada.Integer_Text_IO.Put(a);
       New_Line;
-      F := F2(a,G,K,L);
+      F := F2(a,G,K,L,N);
       Put_Line ("Matrix F:");
-      Matrix_Output(F);
+      Matrix_Output(F,N);
+      Put_Line("End task 2");
    end T2;
 
    task body T3 is
       P,R : Matrix;
       S,T,O : Vector;
+      N : Integer;
    begin
       delay 6.0;
       Put_Line ("Task 3:");
       Put_Line("Enter N3:");
       Ada.Integer_Text_IO.Get(N);
-      while N>NMax loop
+      while N>1000 loop
          Put("N must be less than");
-         Ada.Integer_Text_IO.Put(NMax);
+         Ada.Integer_Text_IO.Put(1000);
          New_Line;
          Put_Line("Enter N:");
          Ada.Integer_Text_IO.Get(N);
       end loop;
-      Matrix_Generate(P);
+      Matrix_Generate(P,N);
       Put_Line ("Matrix P:");
-      Matrix_Output(P);
-      Matrix_Generate(R);
+      Matrix_Output(P,N);
+      Matrix_Generate(R,N);
       Put_Line ("Matrix R:");
-      Matrix_Output(R);
-      Vector_Generate(S);
+      Matrix_Output(R,N);
+      Vector_Generate(S,N);
       Put_Line ("Vector S:");
-      Vector_Output(S);
-      Vector_Generate(T);
+      Vector_Output(S,N);
+      Vector_Generate(T,N);
       Put_Line ("Vector T:");
-      Vector_Output(T);
+      Vector_Output(T,N);
 
-      O:=F3(P,R,S,T);
+      O:=F3(P,R,S,T,N);
       Put_Line ("Vector O:");
-      Vector_Output(O);
-
+      Vector_Output(O,N);
+      Put_Line("End task 3");
    end T3;
 
 begin
    Put_Line("Lab1");
---     Put_Line("Enter N:");
---     Ada.Integer_Text_IO.Get(N);
---     while N>NMax loop
---        Put("N must be less than");
---        Ada.Integer_Text_IO.Put(NMax);
---        New_Line;
---        Put_Line("Enter N:");
---        Ada.Integer_Text_IO.Get(N);
---     end loop;
---     Matrix_Generate(A);
---     Matrix_Output(A);
-
-
 end lab1;
