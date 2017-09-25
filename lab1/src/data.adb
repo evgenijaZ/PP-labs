@@ -47,12 +47,14 @@ package body Data is
 
    procedure Matrix_Output(A : in Matrix; N : in Integer) is
    begin
-      for i in 1..N loop
-         for j in 1..N loop
-            Ada.Integer_Text_IO.Put(A(i,j));
+      if N<10 then
+         for i in 1..N loop
+            for j in 1..N loop
+               Ada.Integer_Text_IO.Put(A(i,j));
+            end loop;
+            New_Line;
          end loop;
-         New_Line;
-      end loop;
+      end if;
    end Matrix_Output;
 
 
@@ -107,10 +109,12 @@ package body Data is
 
    procedure Vector_Output(A : in Vector; N : in Integer) is
    begin
+      if N<10 then
       for i in 1..N loop
          Ada.Integer_Text_IO.Put(A(i));
       end loop;
-      New_Line;
+         New_Line;
+         end if;
    end Vector_Output;
 
    function Max (A: Vector; N : in Integer) return Integer is
