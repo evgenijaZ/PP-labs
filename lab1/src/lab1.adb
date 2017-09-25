@@ -4,22 +4,29 @@ with Data;
 use Data;
 with Ada.Integer_Text_IO;
 with Ada.Integer_Text_IO;
+with System.Multiprocessors;
+use System.Multiprocessors;
 
 procedure lab1 is
-
-   task T1 with CPU=>0 is
+cpu1 : CPU_Range := 1;
+cpu2 : CPU_Range := 1;
+cpu3 : CPU_Range := 1;
+   task T1 is
       pragma Priority(3);
       pragma Storage_Size(900_000_000);
+      pragma CPU(cpu1);
    end T1;
 
-   task T2 with CPU=>1 is
+   task T2 is
       pragma Priority(2);
       pragma Storage_Size(900_000_000);
+      pragma CPU(cpu2);
    end T2;
 
-   task T3 with CPU=>2 is
+   task T3  is
       pragma Priority(1);
       pragma Storage_Size(900_000_000);
+      pragma CPU(cpu3);
    end T3;
 
 
