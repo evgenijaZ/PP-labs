@@ -2,26 +2,24 @@ package com.company;
 
 class Vector {
     int[] value = null;
-    private int N = 0;
     Vector(int N){
-        this.N = N;
         value = new int[N];
+        this.Generate();
     }
 
-    int[] Generate (){
-        if(value == null) return null;
-        for (int i = 0; i<value.length; i++){
-                value[i] = 1;
-            }
-        return value;
+    private void Generate(){
+        if(value == null) return;
+        for (int i = 0; i<value.length; i++) {
+            value[i] = 1;
+        }
     }
 
     void Output (){
         if(value == null) return;
-        for (int i = 0; i<value.length; i++){
-                System.out.print(value[i]+"\t");
-            System.out.println();
+        for (int aValue : value) {
+            System.out.print(aValue + "\t");
         }
+        System.out.println();
     }
 
 }
