@@ -1,9 +1,12 @@
 package com.company;
 
+import java.util.concurrent.Semaphore;
+
 public class Thread2 extends Thread {
     int N = 0;
-
-    Thread2(int N){
+    private Semaphore sem;
+    Thread2(int N, Semaphore s){
+        this.sem = s;
         this.N = N;
         System.out.println("Thread #2 has started");
     }
@@ -16,7 +19,13 @@ public class Thread2 extends Thread {
         Data manager = new Data();
         Matrix F = manager.F2(5,G,K,L);
         System.out.println("Matrix F (thread #2):");
-        F.Output();
+        try {
+            sem.acquire();
+            F.Output();
+        } catch (InterruptedException ex){
+            System.out.printf("Thread %s is interrupted", this.getName());
+        }
+        sem.release();
         System.out.println("Thread #2 has finished");
     }
 }

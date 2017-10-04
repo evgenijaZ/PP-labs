@@ -1,9 +1,12 @@
 package com.company;
 
+import java.util.concurrent.Semaphore;
+
 public class Thread3 extends Thread {
     int N = 0;
-
-    Thread3(int N) {
+    private Semaphore sem;
+    Thread3(int N, Semaphore s) {
+        this.sem = s;
         this.N = N;
         System.out.println("Thread #3 has started");
     }
@@ -17,7 +20,13 @@ public class Thread3 extends Thread {
         Data manager = new Data();
         Vector O = manager.F3(P, R, S, T);
         System.out.println("Vector O (thread #3):");
-        O.Output();
+        try {
+            sem.acquire();
+            O.Output();
+        } catch (InterruptedException ex){
+            System.out.printf("Thread %s is interrupted", this.getName());
+        }
+        sem.release();
         System.out.println("Thread #3 has finished");
     }
 }
