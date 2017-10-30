@@ -10,14 +10,25 @@ namespace lab3
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Main started");
+
             Int32.TryParse(Console.ReadLine(),out N);
             Thread T1 = new Thread(FunctionForT1);
             Thread T2 = new Thread(FunctionForT2);
             Thread T3 = new Thread(FunctionForT3);
 
+            T1.Priority = ThreadPriority.Lowest;
+            T2.Priority = ThreadPriority.Normal;
+            T3.Priority = ThreadPriority.Highest;
+
             T1.Start();
             T2.Start();
             T3.Start();
+
+            T1.Join();
+            T2.Join();
+            T3.Join();
+            Console.WriteLine("Main finished");
 
             Console.ReadKey();
 
