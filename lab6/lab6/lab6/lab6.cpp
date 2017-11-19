@@ -16,17 +16,21 @@ void F3();
 
 int main(int argc, char **argv)
 {
-	
-	cout << "Main thread started" << endl;
-	cin >> N;
 
-	int ProcNum;
-
+	N = 20;
+	int ProcNum, ProcRank, RecvRank;
+	MPI_Status Status;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
-	
+	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
+	if (ProcRank == 0) F1();
+	else if (ProcRank == 1) F2();
+	else if (ProcRank == 2) F3();
 	MPI_Finalize();
+	cin.get();
+	cin.get();
 	return 0;
+
 }
 
 
