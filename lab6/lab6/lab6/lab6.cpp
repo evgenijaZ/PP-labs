@@ -3,73 +3,97 @@
 
 #include "stdafx.h"
 #include <mpi.h>
-#include <iostream>
 #include "DataClass.h"
+#include "Printer.h"
 using std::cout;
 using std::cin;
 using std::endl;
 
 int N = 0;
-void F1();
-void F2();
-void F3();
-
+Matrix F1(Printer* p);
+Matrix F2(Printer* p);
+Vector F3(Printer* p);
 int main(int argc, char **argv)
 {
-
-	N = 20;
+	cin >> N;
 	int ProcNum, ProcRank, RecvRank;
-	MPI_Status Status;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &ProcNum);
 	MPI_Comm_rank(MPI_COMM_WORLD, &ProcRank);
-	if (ProcRank == 0) F1();
-	else if (ProcRank == 1) F2();
-	else if (ProcRank == 2) F3();
+	Printer* pr = new Printer();
+
+	switch (ProcRank)
+	{
+	case 0:	
+	{
+		F1(pr);		
+		break; 
+	}
+	case 1: 
+	{ 
+		F2(pr);
+		break;
+	}
+	case 2: 
+	{
+		F3(pr);
+		break; 
+	}
+	default:
+		break;
+	}
+
 	MPI_Finalize();
-	cin.get();
 	cin.get();
 	return 0;
 
 }
 
 
-void F1() {
-	cout << "Thread #1 started" << endl;
+Matrix F1(Printer *p) {
+	p->Show("Thread #1 started\n");
 	DataClass Manager(N);
 	Matrix A(N);
 	Matrix D(N);
 	Vector B(N);
 	Matrix E(N);
 	E = Manager.F1(A, D, B);
-	cout << endl << "Matrix E (thread #1):" << endl;
-	E.Output();
-	cout << endl << "Thread #1 finished" << endl;
+	p->Show("\nMatrix E (thread #1):\n");
+	p->Show(&E);
+	p->Show("\nThread #1 finished\n");
+
+	return E;
 
 }
-void F2() {
-	cout << "Thread #2 started" << endl;
+Matrix F2(Printer* p) {
+	p->Show("Thread #2 started\n");
+
 	DataClass Manager(N);
 	Matrix G(N);
 	Matrix K(N);
 	Matrix L(N);
 	Matrix F = Manager.F2(5, G, K, L);
-	cout << endl << "Matrix F (thread #2):" << endl;
-	F.Output();
-	cout << endl << "Thread #2 finished" << endl;
-}
-void F3() {
+	p->Show("\nMatrix F (thread #2):\n");
+	p->Show(&F);
+	p->Show("\nThread #2 finished\n");
 
-	cout << "Thread #3 started" << endl;
+	return F;
+}
+Vector F3(Printer *p) {
+
+	p->Show("Thread #3 started\n");
 	DataClass Manager(N);
 	Matrix P(N);
 	Matrix R(N);
 	Vector S(N);
 	Vector T(N);
 	Vector O = Manager.F3(P, R, S, T);
-	cout << endl << "Vector O (thread #3):" << endl;
-	O.Output();
-	cout << endl << "Thread #3 finished" << endl;
+	
+	p->Show("\nVector O (thread #3):\n");
+	p->Show(&O);
+	p->Show("\nThread #3 finished\n");
+
+	return O;
 }
 
 
