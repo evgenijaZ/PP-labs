@@ -4,8 +4,8 @@
 -- MA = MB * MC + a * ( MK + MT)
 ---------------------------------------
 
-with Ada.Text_IO, Ada.Integer_Text_IO, DataOperations;
-use Ada.Text_IO, Ada.Integer_Text_IO;
+with Ada.Text_IO, Ada.Integer_Text_IO, DataOperations, Ada.Synchronous_Task_Control;
+use Ada.Text_IO, Ada.Integer_Text_IO, Ada.Synchronous_Task_Control;
 
 procedure Lab1 is
 
@@ -22,6 +22,8 @@ procedure Lab1 is
    MB:Matrix;
    --Result
    MA:Matrix;
+   --Semaphors
+   S1,S2,S3,Sa,Smb:Suspension_Object;
    --Tasks
    procedure Tasks is
       task T1 is
@@ -34,6 +36,8 @@ procedure Lab1 is
          FillWithOne(a);
          FillWithOne(MK);
          FillWithOne(MC);
+         Set_True(S1);
+         Suspend_Until_True(S2);
          Put_Line("T1 finished");
       end T1;
 
@@ -46,11 +50,14 @@ procedure Lab1 is
          Put_Line("T2 started");
          FillWithOne(MB);
          FillWithOne(MT);
+         Set_True(S2);
+         Suspend_Until_True(S1);
          Put_Line("T2 finished");
       end T2;
    begin
       null;
    end Tasks;
+
 begin
    Put_Line("Program started");
    Tasks;

@@ -19,7 +19,7 @@ package DataOperations is
 
    procedure FillWithOne(A : out Vector);
 
-   procedure Input (MA : out Matrix);
+   procedure Input(MA : out Matrix);
 
    procedure Generate(MA : out Matrix);
 
