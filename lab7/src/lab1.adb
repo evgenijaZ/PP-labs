@@ -12,7 +12,7 @@ use Ada.Text_IO, Ada.Integer_Text_IO, Ada.Synchronous_Task_Control;
 
 procedure Lab1 is
 
-   N : Integer := 10;
+   N : Integer := 4;
    P : Integer := 2;
    H : Integer := N / P;
 
@@ -23,6 +23,10 @@ procedure Lab1 is
    --Common resources
    a  : Integer;
    MB : Matrix;
+            --Middle
+         Mbc  : Matrix;
+         Mkt  : Matrix;
+         Makt : Matrix;
    --Result
    MA : Matrix;
    --Semaphors
@@ -35,10 +39,7 @@ procedure Lab1 is
       task body T1 is
          a1  : Integer;
          MB1 : Matrix;
-         --Middle
-         Mbc  : Matrix;
-         Mkt  : Matrix;
-         Makt : Matrix;
+
       begin
          Put_Line ("T1 started");
          --input a, MK, MC
@@ -52,7 +53,6 @@ procedure Lab1 is
 
          --critical section 1
          --Suspend_Until_True(Scs1);
-
          a1 := a;
          Set_True (Scs1);
 
@@ -78,10 +78,6 @@ procedure Lab1 is
       task body T2 is
          a2  : Integer;
          MB2 : Matrix;
-         --Middle
-         Mbc  : Matrix;
-         Mkt  : Matrix;
-         Makt : Matrix;
       begin
          Put_Line ("T2 started");
          --input MB, MT
@@ -91,20 +87,25 @@ procedure Lab1 is
          Set_True (S2);
          --wait for data input in task T1
          Suspend_Until_True (S1);
+
          --critical section 1
          Suspend_Until_True (Scs1);
          a2 := a;
          Set_True (Scs1);
+
          --critical section 2
          Suspend_Until_True (Scs2);
          MB2 := MB;
          Set_True (Scs2);
+
          --calculating
          Multiple (MB2, MC, H + 1, N, Mbc);
          Amount (MK, MT, H + 1, N, Mkt);
          Multiple (a, Mkt, H + 1, N, Makt);
          Amount (Mbc, Makt, H + 1, N, MA);
          Suspend_Until_True (S3);
+
+
          Output (MA);
 
          Put_Line ("T2 finished");

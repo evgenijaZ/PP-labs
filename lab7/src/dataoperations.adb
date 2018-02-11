@@ -8,7 +8,7 @@ use Ada.Text_IO, Ada.Integer_Text_IO;
 
 package body DataOperations is
 
-   subtype Random_Range is Positive range 1 .. 10;
+   subtype Random_Range is Positive range 1 .. 1;
    package Random_Integer is new Ada.Numerics.Discrete_Random (Random_Range);
    G           : Random_Integer.Generator;
    Random_Item : Random_Range;
@@ -114,7 +114,7 @@ package body DataOperations is
    is
    begin
 
-      for i in From .. To loop
+      for i in 1 .. N loop
          for j in From .. To loop
             MR (i) (j) := MB (i) (j) * A;
          end loop;
@@ -129,7 +129,7 @@ package body DataOperations is
       MR    :    out Matrix)
    is
    begin
-      for i in Left'Range loop
+      for i in 1..N loop
          for J in From .. To loop
             MR (i) (J) := 0;
             for K in Right'Range loop
@@ -147,7 +147,7 @@ package body DataOperations is
       MR   :    out Matrix)
    is
    begin
-      for i in From .. To loop
+      for i in 1 .. N loop
          for j in From .. To loop
             MR (i) (j) := MA (i) (j) + MB (i) (j);
          end loop;
