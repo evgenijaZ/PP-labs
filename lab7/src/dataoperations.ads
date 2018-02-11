@@ -44,8 +44,8 @@ package DataOperations is
       MR   :    out Matrix);
 
    procedure Amount
-     (A    : in     Matrix;
-      B    : in     Matrix;
+     (MA    : in     Matrix;
+      MB    : in     Matrix;
       From :        Integer;
       To   :        Integer;
       MR   :    out Matrix);

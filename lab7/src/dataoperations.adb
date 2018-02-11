@@ -88,7 +88,7 @@ package body DataOperations is
    begin
       New_Line;
       for i in 1 .. N loop
-         Put (Item => V (i), Width => 4);
+         Put (Item => V (i), Width => 10);
       end loop;
       New_Line;
    end Output;
@@ -98,7 +98,7 @@ package body DataOperations is
       New_Line;
       for i in 1 .. N loop
          for j in 1 .. N loop
-            Put (Item => MA (i) (j), Width => 4);
+            Put (Item => MA (i) (j), Width => 10);
          end loop;
          New_Line;
       end loop;
@@ -140,16 +140,16 @@ package body DataOperations is
    end Multiple;
 
    procedure Amount
-     (A    : in     Matrix;
-      B    : in     Matrix;
+     (MA    : in     Matrix;
+      MB    : in     Matrix;
       From :        Integer;
       To   :        Integer;
       MR   :    out Matrix)
    is
    begin
       for i in From .. To loop
-         for J in From .. To loop
-            MR (i) (J) := A (i) (J) + B (i) (J);
+         for j in From .. To loop
+            MR (i) (j) := MA (i) (j) + MB (i) (j);
          end loop;
       end loop;
    end Amount;
