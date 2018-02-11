@@ -5,6 +5,18 @@ with Ada.Numerics;
 with Ada.Numerics.Discrete_Random;
 package body Data is
 
+   protected body Mutex is
+      entry Seize when not Owned is
+      begin
+         Owned := True;
+      end Seize;
+      Procedure Release is
+      begin
+         Owned := False;
+      end Release;
+   end Mutex;
+
+
    function F1(A : in Matrix; D : in Matrix; B : in Vector; N : in Integer) return Matrix is
       E : Matrix;
    begin
@@ -36,6 +48,7 @@ package body Data is
    procedure Matrix_Input (A : out Matrix; N : in Integer) is
       item : Integer;
    begin
+      My_Mutex.Seize;
       Put_Line ("Enter matrix values:");
       for i in 1..N loop
          for j in 1..N loop
@@ -43,18 +56,21 @@ package body Data is
             A(i,j) := item;
          end loop;
       end loop;
+      My_Mutex.Release;
    end Matrix_Input;
 
-   procedure Matrix_Output(A : in Matrix; N : in Integer) is
+   procedure Matrix_Output(A : in Matrix; N : in Integer; S: in String) is
    begin
-      if N<10 then
+      My_Mutex.Seize;
+     Put_Line(S);
          for i in 1..N loop
             for j in 1..N loop
                Ada.Integer_Text_IO.Put(A(i,j));
             end loop;
             New_Line;
          end loop;
-      end if;
+
+      My_Mutex.Release;
    end Matrix_Output;
 
 
@@ -68,7 +84,7 @@ package body Data is
       for i in 1..N loop
          for j in 1..N loop
             Num := Rand_Int.Random(seed);
-            A(i,j) := Integer(Num);
+            A(i,j) := 1;
          end loop;
       end loop;
    end Matrix_Generate;
@@ -82,7 +98,7 @@ package body Data is
       Rand_Int.Reset(seed);
       for i in 1..N loop
          Num := Rand_Int.Random(seed);
-         A(i) := Integer(Num);
+         A(i) := 1;
       end loop;
    end Vector_Generate;
 
@@ -94,27 +110,30 @@ package body Data is
    begin
       Rand_Int.Reset(seed);
       Num := Rand_Int.Random(seed);
-      A := Integer(Num);
+      A := 5;
    end Value_Generate;
 
    procedure Vector_Input (A : out Vector; N : in Integer) is
       item : Integer;
    begin
+      My_Mutex.Seize;
       Put_Line ("Enter vector values:");
       for i in 1..N loop
          Ada.Integer_Text_IO.Get(item);
          A(i) := item;
       end loop;
+      My_Mutex.Release;
    end Vector_Input;
 
-   procedure Vector_Output(A : in Vector; N : in Integer) is
+   procedure Vector_Output(A : in Vector; N : in Integer; S: in String) is
    begin
-      if N<10 then
+      My_Mutex.Seize;
+      Put_Line(S);
       for i in 1..N loop
          Ada.Integer_Text_IO.Put(A(i));
       end loop;
          New_Line;
-         end if;
+      My_Mutex.Release;
    end Vector_Output;
 
    function Max (A: Vector; N : in Integer) return Integer is
