@@ -3,11 +3,19 @@
 -- Labwork 1
 -- MA = MB * MC + a * ( MK + MT)
 ---------------------------------------
+
+with Ada.Text_IO, Ada.Integer_Text_IO, DataOperations;
+use Ada.Text_IO, Ada.Integer_Text_IO;
+
 procedure Lab1 is
 
    N:Integer:=100;
    P:Integer:=2;
    H:Integer:=N/P;
+
+   package DataOperations is new DataOperations(N);
+   use DataOperations;
+
 
    procedure Tasks is
       task T1 is
