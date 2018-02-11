@@ -6,12 +6,18 @@ package DataOperations is
    subtype Index is Positive range 1..N;
    type Vector is array (Index) of integer;
    type Matrix is array (Index) of Vector; 
+
+   procedure Input(a : out Integer);
+
+   procedure Generate(a : out Integer);
+
+   procedure FillWithOne(a : out Integer);  
    
-   procedure Input(V : out Vector);
+   procedure Input(A : out Vector);
 
-   procedure Generate(V : out Vector);
+   procedure Generate(A : out Vector);
 
-   procedure FillWithOne(V : out Vector);
+   procedure FillWithOne(A : out Vector);
 
    procedure Input (MA : out Matrix);
 
