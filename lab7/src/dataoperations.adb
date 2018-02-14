@@ -105,53 +105,56 @@ package body DataOperations is
       New_Line;
    end Output;
 
-   procedure Multiple
-     (A    : in     Integer;
-      MB   : in out Matrix;
-      From :        Integer;
-      To   :        Integer;
-      MR   :    out Matrix)
+   function Multiple
+     (A    : in Integer;
+      MB   : in Matrix;
+      From :    Integer;
+      To   :    Integer) return Matrix
    is
+      MR : Matrix;
    begin
 
-      for i in 1 .. N loop
-         for j in From .. To loop
+      for i in From .. To loop
+         for j in 1 .. N loop
             MR (i) (j) := MB (i) (j) * A;
          end loop;
       end loop;
+      return MR;
    end Multiple;
 
-   procedure Multiple
-     (Left  : in     Matrix;
-      Right : in     Matrix;
-      From  :        Integer;
-      To    :        Integer;
-      MR    :    out Matrix)
+   function Multiple
+     (Left  : in Matrix;
+      Right : in Matrix;
+      From  :    Integer;
+      To    :    Integer) return Matrix
    is
+      MR : Matrix;
    begin
-      for i in 1..N loop
-         for J in From .. To loop
-            MR (i) (J) := 0;
+      for i in From .. To loop
+         for j in 1 .. N loop
+            MR (i) (j) := 0;
             for K in Right'Range loop
-               MR (i) (J) := MR (i) (J) + Left (i) (K) * Right (K) (J);
+               MR (i) (j) := MR (i) (j) + Left (i) (K) * Right (K) (j);
             end loop;
          end loop;
       end loop;
+      return MR;
    end Multiple;
 
-   procedure Amount
-     (MA    : in     Matrix;
-      MB    : in     Matrix;
-      From :        Integer;
-      To   :        Integer;
-      MR   :    out Matrix)
+   function Amount
+     (MA   : in Matrix;
+      MB   : in Matrix;
+      From :    Integer;
+      To   :    Integer) return Matrix
    is
+      MR : Matrix;
    begin
-      for i in 1 .. N loop
-         for j in From .. To loop
+      for i in From .. To loop
+         for j in 1 .. N loop
             MR (i) (j) := MA (i) (j) + MB (i) (j);
          end loop;
       end loop;
+      return MR;
    end Amount;
 
 end DataOperations;

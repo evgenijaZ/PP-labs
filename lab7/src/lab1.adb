@@ -63,8 +63,7 @@ procedure Lab1 is
              (Multiple (MB, MC1, 1, H),
               Multiple (a, Amount (MK, MT, 1, H), 1, H),
               1,
-              H)
-             (1 .. H);
+              H) (1 .. H);
          Set_True (S3);
 
          Put_Line ("T1 finished");
@@ -99,14 +98,12 @@ procedure Lab1 is
          Set_True (Scs2);
 
          --calculating
-
          MA (H + 1 .. N) :=
            Amount
              (Multiple (MB, MC2, H + 1, N),
               Multiple (a, Amount (MK, MT, H + 1, N), H + 1, N),
               H + 1,
-              N)
-             (H + 1 .. N);
+              N) (H + 1 .. N);
          Suspend_Until_True (S3);
 
          Output (MA);

@@ -29,25 +29,22 @@ package DataOperations is
 
    procedure Output (MA : in Matrix);
 
-   procedure Multiple
-     (A    : in     Integer;
-      MB    : in out Matrix;
-      From :        Integer;
-      To   :        Integer;
-      MR   :    out Matrix);
+   function Multiple
+     (A    : in Integer;
+      MB   : in Matrix;
+      From :    Integer;
+      To   :    Integer) return Matrix;
 
-   procedure Multiple
-     (Left    : in     Matrix;
-      Right    : in     Matrix;
-      From :        Integer;
-      To   :        Integer;
-      MR   :    out Matrix);
+   function Multiple
+     (Left  : in Matrix;
+      Right : in Matrix;
+      From  :    Integer;
+      To    :    Integer) return Matrix;
 
-   procedure Amount
-     (MA    : in     Matrix;
-      MB    : in     Matrix;
-      From :        Integer;
-      To   :        Integer;
-      MR   :    out Matrix);
+   function Amount
+     (MA   : in Matrix;
+      MB   : in Matrix;
+      From :    Integer;
+      To   :    Integer) return Matrix;
 
 end DataOperations;
