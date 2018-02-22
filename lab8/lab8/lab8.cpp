@@ -15,15 +15,15 @@ int d;
 int x;
 vector E = new int[N];
 vector S = new int[N];
-matrix MO = CreateMatrix(N);
-matrix MK = CreateMatrix(N);
+matrix MO = create_matrix(N);
+matrix MK = create_matrix(N);
 
 void T1() {
-	std::cout << "T1 started" << std::endl;  
+	std::cout << "T1 started" << std::endl;
 
 	int d1, x1;
 	vector S1 = new int[N];
-	matrix MO1 = CreateMatrix(N);
+	matrix MO1 = create_matrix(N);
 
 
 	std::cout << "T1 finished" << std::endl;
@@ -34,7 +34,7 @@ void T2() {
 
 	int d2, x2;
 	vector S2 = new int[N];
-	matrix MO2 = CreateMatrix(N);
+	matrix MO2 = create_matrix(N);
 
 	std::cout << "T2 finished" << std::endl;
 }
@@ -44,7 +44,7 @@ void T3() {
 
 	int d3, x3;
 	vector S3 = new int[N];
-	matrix MO3 = CreateMatrix(N);
+	matrix MO3 = create_matrix(N);
 
 	std::cout << "T3 finished" << std::endl;
 }
@@ -54,14 +54,14 @@ void T4() {
 
 	int d4, x4;
 	vector S4 = new int[N];
-	matrix MO4 = CreateMatrix(N);
+	matrix MO4 = create_matrix(N);
 
 	std::cout << "T4 finished" << std::endl;
 }
 
 int main()
 {
-    return 0;
+	return 0;
 }
 
 
