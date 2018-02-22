@@ -7,12 +7,21 @@
 with Ada
   .Text_IO, Ada
   .Integer_Text_IO, DataOperations, Ada
-  .Synchronous_Task_Control;
-use Ada.Text_IO, Ada.Integer_Text_IO, Ada.Synchronous_Task_Control;
+  .Synchronous_Task_Control, System
+  .Multiprocessors;
+use
+  Ada.Text_IO,
+  Ada.Integer_Text_IO,
+  Ada.Synchronous_Task_Control,
+  System.Multiprocessors;
 
 procedure Lab1 is
 
-   N : Integer := 10;
+   --CPU
+   cpu1 : CPU_Range := 1;
+   cpu2 : CPU_Range := 1;
+
+   N : Integer := 200;
    P : Integer := 2;
    H : Integer := N / P;
    --Semaphors
@@ -30,8 +39,17 @@ procedure Lab1 is
    --Tasks
    procedure Tasks is
       task T1 is
-         pragma Storage_Size (3_000_000);
+         pragma Priority (3);
+         pragma Storage_Size (300_000_000);
+         pragma CPU (cpu1);
       end T1;
+
+      task T2 is
+         pragma Priority (3);
+         pragma Storage_Size (300_000_000);
+         pragma CPU (cpu2);
+      end T2;
+
       task body T1 is
          a1  : Integer;
          MC1 : Matrix;
@@ -63,15 +81,12 @@ procedure Lab1 is
              (Multiple (MB, MC1, 1, H),
               Multiple (a, Amount (MK, MT, 1, H), 1, H),
               1,
-              H) (1 .. H);
+              H)
+             (1 .. H);
          Set_True (S3);
 
          Put_Line ("T1 finished");
       end T1;
-
-      task T2 is
-         pragma Storage_Size (3_000_000);
-      end T2;
 
       task body T2 is
          a2  : Integer;
@@ -103,7 +118,8 @@ procedure Lab1 is
              (Multiple (MB, MC2, H + 1, N),
               Multiple (a, Amount (MK, MT, H + 1, N), H + 1, N),
               H + 1,
-              N) (H + 1 .. N);
+              N)
+             (H + 1 .. N);
          Suspend_Until_True (S3);
 
          Output (MA);
@@ -119,4 +135,5 @@ begin
    Set_True (Scs1);
    Set_True (Scs2);
    Tasks;
+   Put_Line ("Program finished");
 end Lab1;
