@@ -21,8 +21,7 @@ matrix MK = create_matrix(N);
 
 
 HANDLE Event_in[3],
-Event_out[3],
-Mutex1_a, Sem_a_part[4];
+Mutex1, Sem[3];
 CRITICAL_SECTION CrSec1_copy, CrSec2_output;
 
 
@@ -68,12 +67,11 @@ void T1() {
 
 	//merge sort...
 
-	WaitForMultipleObjects(3, Event_out, TRUE, INFINITE);
+	WaitForMultipleObjects(3, Sem, true, INFINITE);
+
 	//output
 	EnterCriticalSection(&CrSec2_output);
 	output(A, N);
-
-
 	std::cout << "T1 finished" << std::endl;
 	LeaveCriticalSection(&CrSec2_output);
 
@@ -83,8 +81,11 @@ void T2() {
 	EnterCriticalSection(&CrSec2_output);
 	std::cout << "T2 started" << std::endl;
 	LeaveCriticalSection(&CrSec2_output);
+
 	int from = H;
 	int to = 2 * H;
+
+
 	int d2, x2;
 	vector S2 = new int[N];
 	matrix MO2 = create_matrix(N);
@@ -106,7 +107,7 @@ void T2() {
 	//calculating
 	assign(A, sort(amount(multiple(d2, E, from, to, N), multiple(S, multiple(MO2, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
 
-	SetEvent(Event_out[0]);
+	ReleaseSemaphore(Sem[0], 1, NULL);
 
 	EnterCriticalSection(&CrSec2_output);
 	std::cout << "T2 finished" << std::endl;
@@ -118,6 +119,7 @@ void T3() {
 	EnterCriticalSection(&CrSec2_output);
 	std::cout << "T3 started" << std::endl;
 	LeaveCriticalSection(&CrSec2_output);
+
 	int from = 2 * H;
 	int to = 3 * H;
 
@@ -151,7 +153,7 @@ void T3() {
 	//calculating
 	assign(A, sort(amount(multiple(d3, E, from, to, N), multiple(S, multiple(MO3, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
 
-	SetEvent(Event_out[1]);
+	ReleaseSemaphore(Sem[1], 1, NULL);
 
 	EnterCriticalSection(&CrSec2_output);
 	std::cout << "T3 finished" << std::endl;
@@ -197,7 +199,8 @@ void T4() {
 	//calculating
 	assign(A, sort(amount(multiple(d4, E, from, to, N), multiple(S, multiple(MO4, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
 
-	SetEvent(Event_out[2]);
+	ReleaseSemaphore(Sem[2], 1, NULL);
+
 	EnterCriticalSection(&CrSec2_output);
 	std::cout << std::endl << "T4 finished" << std::endl;
 	LeaveCriticalSection(&CrSec2_output);
@@ -210,9 +213,10 @@ int main()
 	Event_in[1] = CreateEvent(NULL, TRUE, FALSE, NULL);
 	Event_in[2] = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	Event_out[0] = CreateEvent(NULL, TRUE, FALSE, NULL);
-	Event_out[1] = CreateEvent(NULL, TRUE, FALSE, NULL);
-	Event_out[2] = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	Sem[0] = CreateSemaphore(NULL, 0, 1, NULL);
+	Sem[1] = CreateSemaphore(NULL, 0, 1, NULL);
+	Sem[2] = CreateSemaphore(NULL, 0, 1, NULL);
 
 	InitializeCriticalSection(&CrSec1_copy);
 	InitializeCriticalSection(&CrSec2_output);
@@ -230,6 +234,17 @@ int main()
 	CloseHandle(threads[1]);
 	CloseHandle(threads[2]);
 	CloseHandle(threads[3]);
+
+	CloseHandle(Event_in[0]);
+	CloseHandle(Event_in[1]);
+	CloseHandle(Event_in[2]);
+
+	CloseHandle(Sem[0]);
+	CloseHandle(Sem[1]);
+	CloseHandle(Sem[2]);
+
+	DeleteCriticalSection(&CrSec1_copy);
+	DeleteCriticalSection(&CrSec2_output);
 
 	std::cin.get();
 	return 0;
