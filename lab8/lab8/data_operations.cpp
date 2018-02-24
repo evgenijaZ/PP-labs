@@ -38,6 +38,7 @@ void output(vector A, int n)
 	{
 		std::cout << std::setw(4) << A[i];
 	}
+	std::cout << std::endl;
 }
 
 void output(matrix MA, int n)
@@ -95,7 +96,7 @@ vector multiple(int a, vector B, int from, int to, int n)
 	vector C = new int[n];
 	for (int j = from; j < to; j++)
 	{
-		C[j] = B[j]*a;
+		C[j] = B[j] * a;
 	}
 	return C;
 }
@@ -104,7 +105,7 @@ vector amount(vector A, vector B, int from, int to, int n) {
 	vector C = new int[n];
 	for (int j = from; j < to; j++)
 	{
-		C[j] = A[j]+B[j];
+		C[j] = A[j] + B[j];
 	}
 	return C;
 }
@@ -121,4 +122,12 @@ vector sort(vector A, int from, int to) {
 		}
 	}
 	return A;
+}
+
+void assign(vector A, vector B, int from, int to)
+{
+	for (int i = from; i < to; i++) 
+	{
+		A[i] = B[i];
+	}
 }

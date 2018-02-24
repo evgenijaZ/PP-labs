@@ -17,3 +17,5 @@ vector multiple(int a, vector B, int from, int to, int n);
 vector amount(vector A, vector B, int from, int to, int n);
 
 vector sort(vector A, int from, int to);
+
+void assign(vector A, vector B, int from, int to);
