@@ -7,7 +7,7 @@
 #include "data_operations.h"
 
 
-const int N = 1000;
+const int N = 10;
 const int P = 4;
 const int H = N / P;
 
@@ -252,7 +252,8 @@ int main()
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)T4, NULL, NULL, &Tid4)
 	};
 
-	WaitForMultipleObjects(4, threads, true, INFINITE);
+	//WaitForMultipleObjects(4, threads, true, INFINITE);
+	WaitForSingleObject(threads[1], INFINITE);
 	
 	CloseHandle(threads[0]);
 	CloseHandle(threads[1]);
