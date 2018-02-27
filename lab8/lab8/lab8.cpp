@@ -7,7 +7,7 @@
 #include "data_operations.h"
 
 
-const int N = 23;
+const int N = 1000;
 const int P = 4;
 const int H = N / P;
 
@@ -20,15 +20,15 @@ matrix MO = create_matrix(N);
 matrix MK = create_matrix(N);
 
 
-HANDLE Event_in[3],
-Mutex1, Sem[3];
-CRITICAL_SECTION CrSec1_copy, CrSec2_output;
+HANDLE Event_input[3], Mutex_merge[2], Sem_calc[4];
+CRITICAL_SECTION CriticalSection_copy;
 
-
+//_______________________________________________________________________
+//
+//----------------------------------T1-----------------------------------
+//_______________________________________________________________________
 void T1() {
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << "T1 started" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	std::cout << "T1 started\n";
 	int from = 0;
 	int to = H;
 
@@ -44,13 +44,13 @@ void T1() {
 
 
 	// Signal to T2, T3, T4 (MK, E are entered)
-	SetEvent(Event_in[0]);
+	SetEvent(Event_input[0]);
 
-	//Wait for T2, T3, and
-	WaitForMultipleObjects(4, Event_in, true, INFINITE);
+	//Wait for T2, T3, and T4
+	WaitForMultipleObjects(4, Event_input, true, INFINITE);
 
 	//copy d,x,S,MO
-	EnterCriticalSection(&CrSec1_copy);
+	EnterCriticalSection(&CriticalSection_copy);
 	d1 = d;
 	x1 = x;
 	for (int i = 0; i < N; i++) {
@@ -59,41 +59,46 @@ void T1() {
 			MO1[i][j] = MO[i][j];
 		}
 	}
-	LeaveCriticalSection(&CrSec1_copy);
+	LeaveCriticalSection(&CriticalSection_copy);
 
 	//calculating
 	assign(A, sort(amount(multiple(d1, E, from, to, N), multiple(S, multiple(MO1, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
+	
+	//Signal to T2,T3,T4
+	ReleaseSemaphore(Sem_calc[0], 1, NULL);
 
+	//Wait for T2,T3
+	WaitForMultipleObjects(2, Mutex_merge, true, INFINITE);
 
-	//merge sort...
-
-	WaitForMultipleObjects(3, Sem, true, INFINITE);
-
+	//merge sort
+	assign(A, merge_sort(A, 0, N), 0, N);
+	
 	//output
-	EnterCriticalSection(&CrSec2_output);
-	output(A, N);
-	std::cout << "T1 finished" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
-
+	if (N<10)
+		output(A, N);
+	
+	std::cout << "T1 finished\n";
 }
 
+//_______________________________________________________________________
+//
+//----------------------------------T2-----------------------------------
+//_______________________________________________________________________
 void T2() {
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << "T2 started" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	std::cout << "T2 started\n";
 
 	int from = H;
 	int to = 2 * H;
-
 
 	int d2, x2;
 	vector S2 = new int[N];
 	matrix MO2 = create_matrix(N);
 
 	//Wait for T1, T3, and T4
-	WaitForMultipleObjects(3, Event_in, true, INFINITE);
+	WaitForMultipleObjects(3, Event_input, true, INFINITE);
+	
 	//copy d,x,S,MO
-	EnterCriticalSection(&CrSec1_copy);
+	EnterCriticalSection(&CriticalSection_copy);
 	d2 = d;
 	x2 = x;
 	for (int i = 0; i < N; i++) {
@@ -102,23 +107,31 @@ void T2() {
 			MO2[i][j] = MO[i][j];
 		}
 	}
-	LeaveCriticalSection(&CrSec1_copy);
+	LeaveCriticalSection(&CriticalSection_copy);
 
 	//calculating
 	assign(A, sort(amount(multiple(d2, E, from, to, N), multiple(S, multiple(MO2, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
+	
+	//Signal to T1,T2,T3
+	ReleaseSemaphore(Sem_calc[1], 1, NULL);
 
-	ReleaseSemaphore(Sem[0], 1, NULL);
+	//Wait for calculating in T1,T3,T4
+	WaitForMultipleObjects(4, Sem_calc, true, INFINITE);
 
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << "T2 finished" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	//merge 1 and 2 parts
+	assign(A, merge_sort(A, 0, 2 * H), 0, 2 * H);
 
+	//Signal to T1
+	ReleaseMutex(Mutex_merge[0]);
+
+	std::cout << "T2 finished\n";
 }
-
+//_______________________________________________________________________
+//
+//----------------------------------T3-----------------------------------
+//_______________________________________________________________________
 void T3() {
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << "T3 started" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	std::cout << "T3 started\n";
 
 	int from = 2 * H;
 	int to = 3 * H;
@@ -132,14 +145,14 @@ void T3() {
 	fill_with_one(S, N);
 
 	// Signal to T1, T2, T4 (d, S are entered)
-	SetEvent(Event_in[1]);
+	SetEvent(Event_input[1]);
 
 	//Wait for T1, T2, T4
-	WaitForMultipleObjects(3, Event_in, true, INFINITE);
+	WaitForMultipleObjects(3, Event_input, true, INFINITE);
 
 
 	//copy d,x,S,MO
-	EnterCriticalSection(&CrSec1_copy);
+	EnterCriticalSection(&CriticalSection_copy);
 	d3 = d;
 	x3 = x;
 	for (int i = 0; i < N; i++) {
@@ -148,24 +161,31 @@ void T3() {
 			MO3[i][j] = MO[i][j];
 		}
 	}
-	LeaveCriticalSection(&CrSec1_copy);
+	LeaveCriticalSection(&CriticalSection_copy);
 
 	//calculating
 	assign(A, sort(amount(multiple(d3, E, from, to, N), multiple(S, multiple(MO3, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
 
-	ReleaseSemaphore(Sem[1], 1, NULL);
+	ReleaseSemaphore(Sem_calc[2], 1, NULL);
 
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << "T3 finished" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	//Wait for calculating in T1,T2,T4
+	WaitForMultipleObjects(4, Sem_calc, true, INFINITE);
 
-}
-
-void T4() {
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << "T4 started" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	//merge 3 and 4 parts
+	assign(A, merge_sort(A, 2 * H, N), 2 * H, N);
 	
+	//Signal to T1
+	ReleaseMutex(Mutex_merge[1]);
+
+	std::cout << "T3 finished\n";
+}
+//_______________________________________________________________________
+//
+//----------------------------------T4-----------------------------------
+//_______________________________________________________________________
+void T4() {
+	std::cout << "T4 started\n";
+
 	int from = 3 * H;
 	int to = N;
 	int d4, x4;
@@ -177,14 +197,13 @@ void T4() {
 	fill_with_one(MO, N);
 
 	// Signal to T1, T2, T3 (x, MO are entered)
-	SetEvent(Event_in[2]);
+	SetEvent(Event_input[2]);
 
 	//Wait for T1, T2, T3
-	WaitForMultipleObjects(3, Event_in, true, INFINITE);
-
+	WaitForMultipleObjects(3, Event_input, true, INFINITE);
 
 	//copy d,x,S,MO
-	EnterCriticalSection(&CrSec1_copy);
+	EnterCriticalSection(&CriticalSection_copy);
 	d4 = d;
 	x4 = x;
 	for (int i = 0; i < N; i++) {
@@ -193,33 +212,36 @@ void T4() {
 			MO4[i][j] = MO[i][j];
 		}
 	}
-
-	LeaveCriticalSection(&CrSec1_copy);
+	LeaveCriticalSection(&CriticalSection_copy);
 
 	//calculating
 	assign(A, sort(amount(multiple(d4, E, from, to, N), multiple(S, multiple(MO4, MK, from, to, N), from, to, N), from, to, N), from, to), from, to);
+	
+	//Signal to T1,T2,T3
+	ReleaseSemaphore(Sem_calc[3], 1, NULL);
 
-	ReleaseSemaphore(Sem[2], 1, NULL);
-
-	EnterCriticalSection(&CrSec2_output);
-	std::cout << std::endl << "T4 finished" << std::endl;
-	LeaveCriticalSection(&CrSec2_output);
+	std::cout << "\nT4 finished\n";
 }
-
+//_______________________________________________________________________
+//
+//---------------------------------MAIN----------------------------------
+//_______________________________________________________________________
 int main()
 {
 
-	Event_in[0] = CreateEvent(NULL, TRUE, FALSE, NULL);
-	Event_in[1] = CreateEvent(NULL, TRUE, FALSE, NULL);
-	Event_in[2] = CreateEvent(NULL, TRUE, FALSE, NULL);
+	Event_input[0] = CreateEvent(NULL, TRUE, FALSE, NULL);
+	Event_input[1] = CreateEvent(NULL, TRUE, FALSE, NULL);
+	Event_input[2] = CreateEvent(NULL, TRUE, FALSE, NULL);
 
+	Sem_calc[0] = CreateSemaphore(NULL, 0, 1, NULL);
+	Sem_calc[1] = CreateSemaphore(NULL, 0, 1, NULL);
+	Sem_calc[2] = CreateSemaphore(NULL, 0, 1, NULL);
+	Sem_calc[3] = CreateSemaphore(NULL, 0, 1, NULL);
 
-	Sem[0] = CreateSemaphore(NULL, 0, 1, NULL);
-	Sem[1] = CreateSemaphore(NULL, 0, 1, NULL);
-	Sem[2] = CreateSemaphore(NULL, 0, 1, NULL);
+	Mutex_merge[0] = CreateMutex(NULL, FALSE, NULL);
+	Mutex_merge[1] = CreateMutex(NULL, FALSE, NULL);
 
-	InitializeCriticalSection(&CrSec1_copy);
-	InitializeCriticalSection(&CrSec2_output);
+	InitializeCriticalSection(&CriticalSection_copy);
 
 	DWORD Tid1, Tid2, Tid3, Tid4;
 	HANDLE threads[] =
@@ -229,24 +251,30 @@ int main()
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)T3, NULL, NULL, &Tid3),
 		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)T4, NULL, NULL, &Tid4)
 	};
+
 	WaitForMultipleObjects(4, threads, true, INFINITE);
+	
 	CloseHandle(threads[0]);
 	CloseHandle(threads[1]);
 	CloseHandle(threads[2]);
 	CloseHandle(threads[3]);
 
-	CloseHandle(Event_in[0]);
-	CloseHandle(Event_in[1]);
-	CloseHandle(Event_in[2]);
+	CloseHandle(Event_input[0]);
+	CloseHandle(Event_input[1]);
+	CloseHandle(Event_input[2]);
 
-	CloseHandle(Sem[0]);
-	CloseHandle(Sem[1]);
-	CloseHandle(Sem[2]);
+	CloseHandle(Sem_calc[0]);
+	CloseHandle(Sem_calc[1]);
+	CloseHandle(Sem_calc[2]);
+	CloseHandle(Sem_calc[3]);
 
-	DeleteCriticalSection(&CrSec1_copy);
-	DeleteCriticalSection(&CrSec2_output);
+	CloseHandle(Mutex_merge[0]);
+	CloseHandle(Mutex_merge[1]);
 
-	std::cin.get();
+	DeleteCriticalSection(&CriticalSection_copy);
+
+	system("pause");
+
 	return 0;
 }
 
