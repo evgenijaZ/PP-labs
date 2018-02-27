@@ -1,5 +1,6 @@
-// lab8.cpp : Defines the entry point for the console application.
-//
+// Zubrych E.
+// Lab #2
+// A = sort (d*E + x*S*(MO*MK))
 
 #include "stdafx.h"
 #include <iostream>
