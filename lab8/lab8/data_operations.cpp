@@ -129,7 +129,6 @@ vector merge_sort(vector A, int from, int to) {
 	merge_sort(A, from, mid);
 	merge_sort(A, mid, to);
 	merge(A, from, mid, to);
-
 	return A;
 }
 vector merge(vector A, int left, int mid, int right) {
