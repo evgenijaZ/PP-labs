@@ -25,6 +25,83 @@ public class Main {
 
     public static void main(String[] args) {
 
+        AThread T1 = new AThread("T1", 0, H, true) {
+            @Override
+            void input() {
+                //Enter B, S
+                fillVector(B, 1);
+                fillVector(S, 1);
+
+                // Signal B, S input
+                sm.signal1();
+            }
+        };
+
+        AThread T2 = new AThread("T2", H, 2 * H, false) {
+            @Override
+            void input() {
+                // Input C, MK
+                fillVector(C, 1);
+
+                int[][] MK2 = new int[N][N];
+                fillMatrix(MK2, 1);
+                rm.inputMK(MK2);
+
+                // Signal C, MK input
+                sm.signal1();
+            }
+        };
+
+        AThread T3 = new AThread("T3", 2 * H, 3 * H, false) {
+            @Override
+            void input() {
+                // Input Z, S
+                fillVector(Z, 1);
+                fillVector(S, 1);
+
+                // Signal Z, S input
+                sm.signal1();
+            }
+        };
+
+        AThread T4 = new AThread("T4", 3 * H, 4 * H, false) {
+            @Override
+            void input() {
+                // Input MO, d
+                fillMatrix(MO, 1);
+                rm.inputD(1);
+
+                // Signal MO, d input
+                sm.signal1();
+            }
+        };
+
+        AThread T5 = new AThread("T5", 4 * H, 5 * H, false) {
+            @Override
+            void input() {
+            }
+        };
+
+        AThread T6 = new AThread("T6", 5 * H, N, false) {
+            @Override
+            void input() {
+            }
+        };
+
+        Runnable[] tasks = new Runnable[]{T1, T2, T3, T4, T5, T6};
+
+        Thread[] threads = new Thread[P];
+        for (int i = 0; i < P; i++) {
+            threads[i] = new Thread(tasks[i]);
+            threads[i].start();
+        }
+
+        for (Thread t : threads) {
+            try {
+                t.join();
+            } catch (InterruptedException ignored) {
+            }
+        }
     }
 
     abstract static class AThread implements Runnable {
