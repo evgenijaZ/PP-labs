@@ -1,11 +1,11 @@
 # Parallel programming  
 ### Practical work 7
-**Task:** MA = MB * MC + a*(MK + MT)  
-![lab7](reports/scheme_7_1.jpg =300x)  
+**Task:** MA = MB * MC + a*(MK + MT) 
+<img src="reports/scheme_7_1.jpg" alt="lab7" style="width: 300px;"/> 
 **Tools:** Ada. Semaphores.   
 ### Practical work 8
 **Task:** A = sort(d*E + x*S(MO * MK))  
-![lab8](reports/scheme_8_1.jpg =300x)  
+<img src="reports/scheme_8_1.jpg" alt="lab8" style="width: 300px;"/>  
 **Tools:** WinAPI. Semaphores, Mutex, Events, Critical Sections.   
 ### Practical work 9
 **Task:**  A = sort(d*E + x*S(MO * MK))    
