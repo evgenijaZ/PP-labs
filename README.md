@@ -9,7 +9,7 @@
 **Tools:** WinAPI. Semaphores, Mutex, Events, Critical Sections.   
 ### Practical work 9
 **Task:**  A = sort(d*E + x*S(MO * MK))   
-<img src="reports/scheme_9_1.jpg" alt="lab9" style="width: 300px;"/>  
+<img src="reports/scheme_9_1.jpg" alt="lab9" style="max-width: 300px;"/>  
 **Tools:** C#  
 ### Practical work 10
 **Task:** MA = max(Z)*(MO * MT) + min(S) * MF    
