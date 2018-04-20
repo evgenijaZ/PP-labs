@@ -26,5 +26,102 @@ public class Main {
     public static void main(String[] args) {
 
     }
+
+    abstract static class AThread implements Runnable {
+        String name;
+        int from, to;
+        boolean output;
+
+        private int e, d, current;
+        private int[][] MK = new int[N][N];
+
+        AThread(String name, int from, int to, boolean output) {
+            this.name = name;
+            this.from = from;
+            this.to = to;
+            this.output = output;
+        }
+
+        abstract void input();
+
+        public void run() {
+            System.out.println(name + " started");
+
+            //Input values
+            input();
+
+            // Wait for input
+            sm.wait1();
+
+            // Calculate ei = (BH * CH)
+            current = calculateSubDot(from, to, B, C);
+            // Calculate e = e + ei
+            rm.addE(current);
+
+            // Signal e calculation finish
+            sm.signal2();
+
+            // Wait other threads to finish m calculation
+            sm.wait2();
+
+            //Copy e, d, MK
+            e = rm.copyE();
+            d = rm.copyD();
+            MK = rm.copyMK();
+
+            // Calculate AH = ei * ZH + di * SH * (MOH * MKi)
+            calculateA(from, to, e, d, MK);
+
+            if (output) {
+                // Wait for other threads to finish
+                sm.wait3();
+                // Print A
+                if (N <= 12) {
+                    System.out.println(Arrays.toString(A));
+                }
+            } else
+                sm.signal3();
+
+            System.out.println(name + " finished");
+        }
+
+        private int calculateSubDot(int from, int to, int[] b, int[] c) {
+            int result = 0;
+            for (int i = from; i < to; i++) {
+                result += B[i] * C[i];
+            }
+            return result;
+        }
+
+        void fillMatrix(int[][] matrix, int value) {
+            for (int[] row : matrix) {
+                fillVector(row, value);
+            }
+        }
+
+        void fillVector(int[] vector, int value) {
+            for (int i = 0; i < vector.length; i++) {
+                vector[i] = value;
+            }
+        }
+
+        private void calculateA(int from, int to, int ei, int di, int[][] MKi) {
+            int[] V = new int[N];
+            int current;
+            for (int i = from; i < to; i++) {
+                for (int j = 0; j < N; j++) {
+                    V[j] = 0;
+                    current = 0;
+                    for (int k = 0; k < N; k++) {
+                        current += MO[i][k] * MKi[k][j];
+                    }
+                    for (int k = 0; k < N; k++) {
+                        V[j] += current * S[k];
+                    }
+                }
+                A[i] = ei * Z[i] + di * V[i];
+            }
+        }
+    }
 }
 
