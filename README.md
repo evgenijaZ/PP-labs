@@ -17,7 +17,7 @@
 ![lab10](reports/scheme_10_1.jpg)  
 ### Practical work 11
 **Task:** A = (B * C) * Z + d * S * (MO * MK)  
-**Tools:** Ada. Protected module. 
+**Tools:** Ada. Protected module.  
 ![lab11](reports/scheme_11_1.jpg)  
 ### Practical work 12
 **Task:**  A = (B * C) * Z + d * S * (MO * MK)  
