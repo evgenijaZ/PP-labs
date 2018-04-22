@@ -92,8 +92,8 @@ procedure Main is
          MK := MK_p;
       end Data2;
       --Calculate m1
-      m1 := 1000;
-      for i in 1 .. H loop
+      m1 := Z(1);
+      for i in 2 .. H loop
          if Z (i) < m1 then
             m1 := Z (i);
          end if;
@@ -145,8 +145,8 @@ procedure Main is
       --Send MB, MK to T1;
       T1.Data2 (MB (1 .. H), MK);
       --Calculate m2;
-      m2 := 1000;
-      for i in H + 1 .. 2 * H loop
+      m2 := Z(H+1);
+      for i in H + 2 .. 2 * H loop
          if Z (i) < m2 then
             m2 := Z (i);
          end if;
@@ -219,8 +219,8 @@ procedure Main is
       --Send MB,MK to T6;
       T6.Data2 (MB (4 * H + 1 .. 5 * H), MK);
       --Calculate m3;
-      m3 := 1000;
-      for i in 1 .. H loop
+      m3 := Z(1);
+      for i in 2 .. H loop
          if Z (i) < m3 then
             m3 := Z (i);
          end if;
@@ -303,8 +303,8 @@ procedure Main is
          MO := MO_p;
       end Data1;
       --Calculate m4;
-      m4 := 1000;
-      for i in 1 .. H loop
+      m4 := Z(1);
+      for i in 2 .. H loop
          if Z (i) < m4 then
             m4 := Z (i);
          end if;
@@ -324,7 +324,7 @@ procedure Main is
          M (6) := m6_p;
       end SendMin12356;
       --Calculate m;
-      min := 1000;
+      min := M(1);
       for i in 2 .. P loop
          if M (i) < min then
             min := M (i);
@@ -381,8 +381,8 @@ procedure Main is
          MK := MK_p;
       end Data2;
       --Calculate m5;
-      m5 := 1000;
-      for i in 1 .. H loop
+      m5 := Z(1);
+      for i in 2 .. H loop
          if Z (i) < m5 then
             m5 := Z (i);
          end if;
@@ -429,8 +429,8 @@ procedure Main is
          MK := MK_p;
       end Data2;
       --Calculate m6;
-      m6 := 1000;
-      for i in 1 .. H loop
+      m6 := Z(1);
+      for i in 2 .. H loop
          if Z (i) < m6 then
             m6 := Z (i);
          end if;
