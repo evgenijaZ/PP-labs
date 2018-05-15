@@ -2,11 +2,15 @@ with Ada.Text_IO, Ada.Integer_Text_IO,
      Ada.Synchronous_Task_Control;
 use Ada.Text_IO, Ada.Integer_Text_IO,
     Ada.Synchronous_Task_Control;
+with Ada.Calendar; use Ada.Calendar;
 
 procedure Main is
-   N : Integer := 12;
+   N : Integer := 1000;
    P : Integer := 4;
    H : Integer := N / P;
+
+   startTime : Time;
+   endTime : Time;
 
    type Vector is array (1 .. N) of Integer;
    type Matrix is array (1 .. N) of Vector;
@@ -334,6 +338,11 @@ procedure Main is
    end Start;
 
 begin
+
+   startTime := Clock;
    Start;
+   endTime:=Clock;
+   Put("Time: ");
+   Put(Integer(endTime-startTime),10);
 end Main;
 
