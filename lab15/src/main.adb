@@ -1,3 +1,9 @@
+-----------------------------------------
+-- PRG1                                --
+-- A = B * (MC * MD - ME * e)          --
+-- Zubrych Yevheniia                   --
+-- IP-53                               --
+-----------------------------------------
 with Ada.Text_IO, Ada.Integer_Text_IO,
      Ada.Synchronous_Task_Control;
 use Ada.Text_IO, Ada.Integer_Text_IO,
@@ -5,7 +11,7 @@ use Ada.Text_IO, Ada.Integer_Text_IO,
 with Ada.Calendar; use Ada.Calendar;
 
 procedure Main is
-   N : Integer := 1000;
+   N : Integer := 900;
    P : Integer := 4;
    H : Integer := N / P;
 
@@ -342,6 +348,9 @@ begin
    startTime := Clock;
    Start;
    endTime:=Clock;
+   Put("N: ");
+   Put(N);
+   Put_Line("");
    Put("Time: ");
    Put(Integer(endTime-startTime),10);
 end Main;
