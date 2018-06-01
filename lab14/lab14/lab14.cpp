@@ -13,6 +13,11 @@ const int N = 14;
 const int P = 14;
 const int H = N / P;
 
+int error(std::string msg) {
+	MPI_Finalize();
+	cout << msg << "\n";
+	return 1;
+}
 void fillMatrix(long long*, long long dim1, long long val);
 void fillVector(long long*, long long dim1, long long val);
 void printMatrix(std::ostream&, long long*, long long);
@@ -25,8 +30,6 @@ MPI_Group world_group, base_group, star_group;
 MPI_Comm base_comm, star_comm;
 
 int main(int argc, char* argv[]) {
-  int input_dimension[] = {N, H * 2, H * 3, H * 4, H * 4, H, H,
-                           H, H,     H,     H,     H,     H, H};
 
   MPI_Init(&argc, &argv);
 
@@ -42,19 +45,26 @@ int main(int argc, char* argv[]) {
   long long zi = 0;
   long long z = 0;
 
+  auto myIndex = rank == 0 ? N : H;
+
   long long d = 0;
   long long T[N]{0};
-  long long* B = new long long[input_dimension[rank]]{0};
-  long long* Z = new long long[input_dimension[rank]]{0};
+  long long* B = new long long[myIndex]{ 0 };
+  long long* Z = new long long[myIndex]{ 0 };
+  auto Zh = Z;
+  if (rank == 0) Zh = new long long[H];
+  auto Bh = B;
+  if (rank == 0) Bh = new long long[H];
 
   long long MO[N][N]{0};
-  long long** MK = new long long* [N] { 0 };
+  long long* MK = new long long [N*myIndex] { 0 };
+  auto MKh = MK;
+  if (rank == 0) MKh = new long long[N*H];
+  
+  long long* A = new long long[myIndex]{0};
+  long long* Ah=A;
+  if (rank == 0) Ah = new long long[N*H];
 
-  for (int i = 0; i < N; i++) MK[i] = new long long[input_dimension[rank]];
-
-  long long A_[N]{0};
-  long long* A = new long long[input_dimension[rank]]{0};
-  ;
   long long MR[N][N]{0};
 
   int index[] = {4, 6, 9, 13, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
@@ -96,95 +106,49 @@ int main(int argc, char* argv[]) {
     fillVector(&B[0], N, 1);
     fillVector(&T[0], N, 1);
     fillMatrix(&MO[0][0], N, 1);
-    fillMatrix(&MK[0][0], N, 1);
+	std::fill(MK, MK + N*N, 1);
   }
 
   MPI_Bcast(&d, 1, MPI_LONG_LONG, 0, graph_comm);
   MPI_Bcast(&T[0], N, MPI_LONG_LONG, 0, graph_comm);
   MPI_Bcast(&MO[0][0], N * N, MPI_LONG_LONG, 0, graph_comm);
-
-  if (rank < 5) {
-    int b_sendcounts[5]{H};
-    int z_sendcounts[5]{H};
-    int mk_sendcounts[5]{N * H};
-    int b_displs[]{0};
-    int z_displs[]{0};
-    int mk_displs[]{0};
-
-    for (int i = 1; i < 5; ++i) {
-      z_sendcounts[i] = input_dimension[i];
-      b_sendcounts[i] = input_dimension[i];
-      mk_sendcounts[i] = N * input_dimension[i];
-
-      z_displs[i] = z_displs[i - 1] + z_sendcounts[i - 1];
-      b_displs[i] = b_displs[i - 1] + b_sendcounts[i - 1];
-      mk_displs[i] = mk_displs[i - 1] + mk_sendcounts[i - 1];
-    }
-
-    MPI_Scatterv(&Z, z_sendcounts, z_displs, MPI_LONG_LONG,
-                 // rank == 0 ? nullptr :
-                 &Z,
-                 // rank == 0 ? 0 :
-                 input_dimension[rank], MPI_LONG_LONG, 0, base_comm);
-
-    MPI_Scatterv(&B, b_sendcounts, b_displs, MPI_LONG_LONG,
-                 // rank == 0 ? nullptr :
-                 &B,
-                 // rank == 0 ? 0 :
-                 input_dimension[rank], MPI_LONG_LONG, 0, base_comm);
-
-    MPI_Scatterv(&MK, mk_sendcounts, mk_displs, MPI_LONG_LONG,
-                 // rank == 0 ? nullptr :
-                 &MK,
-                 // rank == 0 ? 0 :
-                 N * input_dimension[rank], MPI_LONG_LONG, 0, base_comm);
-  }
-  if (rank != 0) {
-    MPI_Scatter(&Z, H, MPI_LONG_LONG, &Z, H, MPI_LONG_LONG, 0, star_comm);
-    MPI_Scatter(&B, H, MPI_LONG_LONG, &B, H, MPI_LONG_LONG, 0, star_comm);
-    MPI_Scatter(&MK, H * N, MPI_LONG_LONG, &MK, H * N, MPI_LONG_LONG, 0,
-                star_comm);
-  }
+ 
+    MPI_Scatter(&Z, H, MPI_LONG_LONG, &Zh, H, MPI_LONG_LONG, 0, graph_comm);
+    MPI_Scatter(&B, H, MPI_LONG_LONG, &Bh, H, MPI_LONG_LONG, 0, graph_comm);
+    MPI_Scatter(&MK, H * N, MPI_LONG_LONG, &MKh, H * N, MPI_LONG_LONG, 0,
+               graph_comm);
+  
 
   zi = Z[0];
   for (long long i = 0; i < H; ++i) {
-    if (Z[i] < zi) zi = Z[i];
+    if (Zh[i] < zi) zi = Zh[i];
   }
 
-  MPI_Reduce(&zi, &z, 1, MPI_LONG_LONG, MPI_MIN, 0, graph_comm);
+  MPI_Allreduce(&zi, &z, 1, MPI_LONG_LONG, MPI_MIN, graph_comm);
 
   for (long long i = 0; i < N; i++) {
     for (long long j = 0; j < H; j++) {
       MR[i][j] = 0;
       for (long long k = 0; k < N; k++) {
-        MR[i][j] += MO[i][k] * MK[k][j];
+        MR[i][j] += MO[i][k] * MKh[k * N + j];
       }
     }
   }
   for (long long i = 0; i < H; i++) {
-    A[i] = 0;
+    Ah[i] = 0;
     for (long long j = 0; j < N; j++) {
-      A[i] += z * B[i] * T[j] * MR[j][i];
+      Ah[i] += z * Bh[i] * T[j] * MR[j][i];
     }
   }
 
-  if (rank < 5) {
-    int a_recvcounts[5]{H};
-    int a_displs[]{0};
 
-    for (int i = 1; i < 5; ++i) {
-      a_recvcounts[i] = input_dimension[i];
-      a_displs[i] = a_displs[i - 1] + a_recvcounts[i - 1];
-    }
+  MPI_Gather(&Ah, H, MPI_LONG_LONG, &A, H, MPI_LONG_LONG, 0, base_comm);
 
-    MPI_Gatherv(&A, input_dimension[rank], MPI_LONG_LONG, &A_, a_recvcounts,
-                a_displs, MPI_LONG_LONG, 0, base_comm);
-  }
 
   if (rank == 0) {
     cout << "Result is " << std::endl;
     for (long long i = 0; i < N; i++) {
-      cout << A_[i] << " ";
+      cout << A[i] << " ";
     }
   }
 
@@ -244,8 +208,3 @@ void printVector(long long* v, long long size) {
   printVector(std::cout, v, size);
 }
 
-int error(std::string msg) {
-  MPI_Finalize();
-  cout << msg << "\n";
-  return 1;
-}
